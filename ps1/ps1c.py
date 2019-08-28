@@ -1,4 +1,5 @@
 def guessRate(begin, end):
+    #finds midpoint of the given search range and returns it as a decimal
     guess = ((begin + end) / 2) / 10000.0
     return guess
 
@@ -11,27 +12,34 @@ def findSaveRate(starting_salary):
     semi_annual_raise = .07
     months = 36
 
-    #counters, boundaries
+    #search counter, search boundaries
     searches = 0
     begin = 0
     end = 10000
 
+    #continue until there are no more valid save rate guesses.
     while (end - begin) > 1:
         searches += 1
-        current_savings = 0.0
-        annual_salary = starting_salary
         currentGuess = guessRate(begin, end)
+
+        #reinitialize variables for new iteration
+        current_savings = 0.0
         month = 1
+        annual_salary = starting_salary
 
         while month <= months:
             current_savings *= 1 + (r / 12)
             current_savings += (annual_salary / 12) * currentGuess
+            
             #increases salary semi-annually after every 6th month
             if (not (month % 6)):
                 annual_salary *= 1 + semi_annual_raise
             month += 1
         
+        #checks if savings are within 100 dollars of required down payment
         costDiff = current_savings - down
+
+        #updates upper/lower bounds
         if costDiff > 100:
             end = currentGuess * 10000
         elif costDiff < 0:
