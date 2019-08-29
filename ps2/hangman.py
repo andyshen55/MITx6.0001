@@ -11,6 +11,8 @@
 # (so be sure to read the docstrings!)
 import random
 import string
+import re
+import itertools
 
 WORDLIST_FILENAME = "words.txt"
 
@@ -202,8 +204,24 @@ def match_with_gaps(my_word, other_word):
         _ , and my_word and other_word are of the same length;
         False otherwise: 
     '''
-    # FILL IN YOUR CODE HERE AND DELETE "pass"
-    pass
+    # searches and replaces all unguessed letters (_ ) with *
+    replaced = re.sub("_ ", '*', my_word)
+    
+    if len(replaced) != len(other_word):
+      return False
+    
+    guessed = []
+    for char1, char2 in zip(replaced, other_word):
+      if char1 != char2:
+        #checks if an unguessed letter hasnt already been confirmed to exist by other_word
+        if char1 == '*' and char2 not in guessed:
+          guessed.append(char2)
+          continue
+        return False
+      else:
+        guessed.append(char1)
+    
+    return True
 
 
 
@@ -266,13 +284,19 @@ if __name__ == "__main__":
     # To test part 2, comment out the pass line above and
     # uncomment the following two lines.
     
-    secret_word = choose_word(wordlist)
-    hangman(secret_word)
+    # secret_word = choose_word(wordlist)
+    # hangman(secret_word)
 
-###############
+#############
     
     # To test part 3 re-comment out the above lines and 
     # uncomment the following two lines. 
     
     #secret_word = choose_word(wordlist)
     #hangman_with_hints(secret_word)
+
+    #testmain()
+    assert(not match_with_gaps("t_ _ k", "tact"))
+    assert(not match_with_gaps("a_ _ le", "banana"))
+    assert(not match_with_gaps("a_ _ le", "apple"))
+    assert(match_with_gaps("a_ ple", "apple"))
