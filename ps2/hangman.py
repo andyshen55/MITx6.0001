@@ -269,16 +269,67 @@ def hangman_with_hints(secret_word):
     Follows the other limitations detailed in the problem write-up.
     '''
     # FILL IN YOUR CODE HERE AND DELETE "pass"
-    pass
+    #initializers
+    guesses = 6
+    warnings = 3
+    lettersGuessed = []
 
+    print("Welcome to the game Hangman!\nI am thinking of a word that is", len(secret_word), "letters long.")
+    print("You have", warnings, "warnings left.")
 
-def test3AB():
-  assert(not match_with_gaps("a_ pl_ ", "apple"))
-  assert(not match_with_gaps("a_ pl_ ", "apply"))
-  assert(match_with_gaps("a_ pl_ ", "ample"))
-  show_possible_matches('t_ _ t')
-  show_possible_matches('abbbb_ ')
-  show_possible_matches('a_ pl_ ')
+    #continue playing until user has no more guesses left
+    while guesses:
+      print("-------------\nYou have", guesses, "guesses left.")
+      print("Available letters:", get_available_letters(lettersGuessed))
+      guess = str.lower(input("Please guess a letter: "))
+      
+      #hint command
+      if guess == '*':
+        print("Possible word matches are:")
+        show_possible_matches(get_guessed_word(secret_word, lettersGuessed))
+        continue
+
+      #check if provided letter is non-alphabetical or previously guessed
+      if (not str.isalpha(guess)) or guess in lettersGuessed:
+        if warnings:
+          warnings -= 1
+          warningStr = "You have " + str(warnings) + " warnings left:"
+        else:
+          warningStr = "You have no warnings left so you lose one guess:"
+          guesses -= 1
+        
+        if not str.isalpha(guess):
+          print("Oops! That is not a valid letter.", warningStr, get_guessed_word(secret_word, lettersGuessed))
+        elif guess in lettersGuessed:
+          print("Oops! You've already guessed that letter.", warningStr, get_guessed_word(secret_word, lettersGuessed))
+      
+      #warnings averted
+      else:
+        lettersGuessed.append(guess)
+        
+        if guess in secret_word:
+          guessStr = "Good guess:"
+        else:
+          guessStr = "Oops! That letter is not in my word:"
+          guesses -= 1
+
+        print(guessStr, get_guessed_word(secret_word, lettersGuessed))
+
+      #check if user has won
+      if is_word_guessed(secret_word, lettersGuessed):
+        print("-------------\nCongratulations, you won!")
+
+        #find unique letters in secret word to tally score
+        uniqueLetters = 0
+        for char in lettersGuessed:
+          if char in secret_word:
+            uniqueLetters += 1
+        
+        print("Your total score for this game is:", guesses * uniqueLetters)
+        return
+
+    #will only be printed if user runs out of guesses
+    print("-------------\nSorry, you ran out of guesses. The word was " + secret_word + ".")
 
 
 # When you've completed your hangman_with_hint function, comment the two similar
@@ -288,19 +339,8 @@ def test3AB():
 
 
 if __name__ == "__main__":
-    # pass
-
-    # To test part 2, comment out the pass line above and
-    # uncomment the following two lines.
+    secret_word = choose_word(wordlist)
+    hangman(secret_word)
     
-    # secret_word = choose_word(wordlist)
-    # hangman(secret_word)
-
-#############
-    
-    # To test part 3 re-comment out the above lines and 
-    # uncomment the following two lines. 
-    
-    # secret_word = choose_word(wordlist)
-    # hangman_with_hints(secret_word)
-    test3AB()
+    secret_word = choose_word(wordlist)
+    hangman_with_hints(secret_word)
