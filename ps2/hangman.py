@@ -11,8 +11,6 @@
 # (so be sure to read the docstrings!)
 import random
 import string
-import re
-import itertools
 
 WORDLIST_FILENAME = "words.txt"
 
@@ -204,23 +202,17 @@ def match_with_gaps(my_word, other_word):
         _ , and my_word and other_word are of the same length;
         False otherwise: 
     '''
-    # searches and replaces all unguessed letters (_ ) with *
-    replaced = re.sub("_ ", '*', my_word)
-    
-    if len(replaced) != len(other_word):
+    # trims all spaces
+    my_word = my_word.replace(' ', '')
+    if len(my_word) != len(other_word):
       return False
     
-    guessed = []
-    for char1, char2 in zip(replaced, other_word):
-      if char1 != char2:
-        #checks if an unguessed letter hasnt already been confirmed to exist by other_word
-        if char1 == '*' and char2 not in guessed:
-          guessed.append(char2)
-          continue
-        return False
-      else:
-        guessed.append(char1)
-    
+    for i in range(len(my_word)):
+      letter = my_word[i]
+      #if letters dont match up when _ isnt present or instances of a guessed letter arent the same, not a match 
+      if letter != '_' and (letter != other_word[i] or  my_word.count(letter) != other_word.count(other_word[i])):
+          return False
+      
     return True
 
 
@@ -235,8 +227,17 @@ def show_possible_matches(my_word):
              that has already been revealed.
 
     '''
-    # FILL IN YOUR CODE HERE AND DELETE "pass"
-    pass
+    #searches wordlist for matches
+    matches = ""
+    for word in wordlist:
+      if match_with_gaps(my_word, word):
+        matches += word + " "
+
+    if matches:
+      print(matches)
+      return
+
+    print("No matches found")
 
 
 
@@ -271,6 +272,14 @@ def hangman_with_hints(secret_word):
     pass
 
 
+def test3AB():
+  assert(not match_with_gaps("a_ pl_ ", "apple"))
+  assert(not match_with_gaps("a_ pl_ ", "apply"))
+  assert(match_with_gaps("a_ pl_ ", "ample"))
+  show_possible_matches('t_ _ t')
+  show_possible_matches('abbbb_ ')
+  show_possible_matches('a_ pl_ ')
+
 
 # When you've completed your hangman_with_hint function, comment the two similar
 # lines above that were used to run the hangman function, and then uncomment
@@ -292,11 +301,6 @@ if __name__ == "__main__":
     # To test part 3 re-comment out the above lines and 
     # uncomment the following two lines. 
     
-    #secret_word = choose_word(wordlist)
-    #hangman_with_hints(secret_word)
-
-    #testmain()
-    assert(not match_with_gaps("t_ _ k", "tact"))
-    assert(not match_with_gaps("a_ _ le", "banana"))
-    assert(not match_with_gaps("a_ _ le", "apple"))
-    assert(match_with_gaps("a_ ple", "apple"))
+    # secret_word = choose_word(wordlist)
+    # hangman_with_hints(secret_word)
+    test3AB()
