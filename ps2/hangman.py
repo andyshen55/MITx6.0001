@@ -60,7 +60,6 @@ def is_word_guessed(secret_word, letters_guessed):
     returns: boolean, True if all the letters of secret_word are in letters_guessed;
       False otherwise
     '''
-    # FILL IN YOUR CODE HERE AND DELETE "pass"
     for char in secret_word:
       if char not in letters_guessed:
         return False
@@ -75,7 +74,6 @@ def get_guessed_word(secret_word, letters_guessed):
     returns: string, comprised of letters, underscores (_), and spaces that represents
       which letters in secret_word have been guessed so far.
     '''
-    # FILL IN YOUR CODE HERE AND DELETE "pass"
     printStr = ""
     for char in secret_word:
       if char in letters_guessed:
@@ -92,7 +90,6 @@ def get_available_letters(letters_guessed):
     returns: string (of letters), comprised of letters that represents which letters have not
       yet been guessed.
     '''
-    # FILL IN YOUR CODE HERE AND DELETE "pass"
     printStr = ""
     for char in string.ascii_lowercase:
       if char not in letters_guessed:
@@ -207,10 +204,9 @@ def match_with_gaps(my_word, other_word):
     if len(my_word) != len(other_word):
       return False
     
-    for i in range(len(my_word)):
-      letter = my_word[i]
+    for index, letter in enumerate(my_word):
       #if letters dont match up when _ isnt present or instances of a guessed letter arent the same, not a match 
-      if letter != '_' and (letter != other_word[i] or  my_word.count(letter) != other_word.count(other_word[i])):
+      if letter != '_' and (letter != other_word[index] or  my_word.count(letter) != other_word.count(other_word[index])):
           return False
       
     return True
@@ -339,8 +335,5 @@ def hangman_with_hints(secret_word):
 
 
 if __name__ == "__main__":
-    secret_word = choose_word(wordlist)
-    hangman(secret_word)
-    
     secret_word = choose_word(wordlist)
     hangman_with_hints(secret_word)
