@@ -3,8 +3,8 @@
 # The 6.0001 Word Game
 # Created by: Kevin Luu <luuk> and Jenna Wiens <jwiens>
 #
-# Name          : <your name>
-# Collaborators : <your collaborators>
+# Name          : Andy Shen
+# Collaborators : N/A
 # Time spent    : <total time>
 
 import math
@@ -336,9 +336,19 @@ def substitute_hand(hand, letter):
     letter: string
     returns: dictionary (string -> int)
     """
+    subHand = hand.copy()
+    #returns unmodified copy immediately if letter isnt found
+    if letter in subHand:
+        #stores num of letters temporarily
+        num = subHand[letter]
+        availableSubs = VOWELS + CONSONANTS
+        #remove present letters from available substitutions
+        for letter in subHand:
+            availableSubs = availableSubs.replace(letter, '')
+        del subHand[letter]
+        subHand[random.choice(availableSubs)] = num
     
-    pass  # TO DO... Remove this line when you implement this function
-       
+    return subHand
     
 def play_game(word_list):
     """
