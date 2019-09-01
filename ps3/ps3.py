@@ -196,8 +196,17 @@ def is_valid_word(word, hand, word_list):
     word_list: list of lowercase strings
     returns: boolean
     """
-
-    pass  # TO DO... Remove this line when you implement this function
+    valid = True
+    currHand = hand.copy()
+    for letter in word.lower():
+        #if letter is valid update hand should always return a different hand
+        #uses a temporary hand to compare against hand before checking letter
+        tempHand = update_hand(currHand, letter)
+        if currHand == tempHand:
+            valid = False
+        #update current hand to reflect letters being used
+        currHand = tempHand
+    return word.lower() in word_list and valid
 
 #
 # Problem #5: Playing a hand
