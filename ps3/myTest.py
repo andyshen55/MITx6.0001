@@ -1,3 +1,8 @@
 from ps3 import *
 
-get_word_score("weed", 6)
+word_list = load_words()
+hand1 = {'a':1, 'j':1, 'e':1, 'f':1, '*':1, 'r':1, 'x':1}
+hand2 = {'a':1, 'c':1, 'f':1, 'i':1, '*':1, 't':1, 'x':1 }
+print(calculate_handlen(hand1))
+play_hand(hand2, word_list)
+play_hand(hand1, word_list)
