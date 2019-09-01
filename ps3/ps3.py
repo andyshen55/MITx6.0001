@@ -300,7 +300,7 @@ def play_hand(hand, word_list):
     if not calculate_handlen(hand):
         printStr += "Ran out of letters. "
     
-    print(printStr + "Total score: " + str(totalScore) + " points")
+    print(printStr + "Total score for this hand: " + str(totalScore) + " points")
     # Return the total score as result of function
     return totalScore
 
@@ -343,8 +343,8 @@ def substitute_hand(hand, letter):
         num = subHand[letter]
         availableSubs = VOWELS + CONSONANTS
         #remove present letters from available substitutions
-        for letter in subHand:
-            availableSubs = availableSubs.replace(letter, '')
+        for letters in subHand:
+            availableSubs = availableSubs.replace(letters, '')
         del subHand[letter]
         subHand[random.choice(availableSubs)] = num
     
@@ -355,7 +355,7 @@ def play_game(word_list):
     Allow the user to play a series of hands
 
     * Asks the user to input a total number of hands
-
+    
     * Accumulates the score for each hand into a total score for the 
       entire series
  
@@ -380,10 +380,38 @@ def play_game(word_list):
 
     word_list: list of lowercase strings
     """
-    
-    print("play_game not implemented.") # TO DO... Remove this line when you implement this function
-    
+    totalScore = 0
 
+    numHands = int(input("Enter total number of hands: "))
+    for hand in range(numHands):
+        newHand = deal_hand(HAND_SIZE)
+        print("Current Hand: ", end='')
+        display_hand(newHand)
+
+        #ask if sub is wanted
+        sub = input("Would you like to substitute a letter? ")
+        if sub.lower() == "yes":
+            letter = input("Which letter would you like to replace? ")
+            subHand = newHand.copy()
+            newHand = substitute_hand(subHand, letter)
+        print()
+
+        #calls play_hand() on copy in case user wants to replay the hand
+        copyHand = newHand.copy()
+        handScore = play_hand(copyHand, word_list)
+        print("----------")
+
+        #replay functionality
+        replayScore = 0
+        replay = input("Would you like to replay the hand? ")
+        if replay.lower() == "yes":
+            replayScore = play_hand(newHand, word_list)
+            print("----------")
+        
+        totalScore += max(handScore, replayScore)
+
+    print("Total score over all hands:", totalScore)
+    return totalScore
 
 #
 # Build data structures used for entire session and play game
