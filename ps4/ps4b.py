@@ -1,9 +1,15 @@
 # Problem Set 4B
-# Name: <your name here>
-# Collaborators:
+# Name: <Andy Shen>
+# Collaborators: N/A
 # Time Spent: x:xx
 
 import string
+
+#constants
+ASCII_LOWERCASE_START = 97
+ASCII_UPPERCASE_START = 65
+# ASCII_LOWERCASE_END = 122
+# ASCII_UPPERCASE_END = 90
 
 ### HELPER CODE ###
 def load_words(file_name):
@@ -70,7 +76,8 @@ class Message(object):
             self.message_text (string, determined by input text)
             self.valid_words (list, determined using helper function load_words)
         '''
-        pass #delete this line and replace with your code here
+        self.message_text = text
+        self.valid_words = load_words(WORDLIST_FILENAME)
 
     def get_message_text(self):
         '''
@@ -78,7 +85,7 @@ class Message(object):
         
         Returns: self.message_text
         '''
-        pass #delete this line and replace with your code here
+        return self.message_text
 
     def get_valid_words(self):
         '''
@@ -87,7 +94,7 @@ class Message(object):
         
         Returns: a COPY of self.valid_words
         '''
-        pass #delete this line and replace with your code here
+        return self.valid_words.copy()
 
     def build_shift_dict(self, shift):
         '''
@@ -103,7 +110,19 @@ class Message(object):
         Returns: a dictionary mapping a letter (string) to 
                  another letter (string). 
         '''
-        pass #delete this line and replace with your code here
+        shift_dict = {}
+        #separate loops for lower/uppercase letters for readability
+        for letter in string.ascii_lowercase:
+            #to ensure that resultant ascii representation of char is within the range(lowercase start:end), modulo 26 is used
+            new_ascii = (ord(letter) - ASCII_LOWERCASE_START + shift) % 26
+            shift_dict[letter] = chr(new_ascii + ASCII_LOWERCASE_START)
+        
+        #same logic as lowercase loop, just with a different constant 
+        for letter in string.ascii_uppercase:
+            new_ascii = (ord(letter) - ASCII_UPPERCASE_START + shift) % 26
+            shift_dict[letter] = chr(new_ascii + ASCII_UPPERCASE_START)
+
+        return shift_dict
 
     def apply_shift(self, shift):
         '''
@@ -117,8 +136,17 @@ class Message(object):
         Returns: the message text (string) in which every character is shifted
              down the alphabet by the input shift
         '''
-        pass #delete this line and replace with your code here
-
+        cipher = self.build_shift_dict(shift)
+        message = self.get_message_text()
+        encrypted = ""
+        #build encrypted message one letter at a time according to the cipher
+        for letter in message:
+            #non alphabetical letters are ignored, pursuant to the spec
+            if letter in cipher:
+                encrypted += cipher[letter]
+        return encrypted
+        
+    
 class PlaintextMessage(Message):
     def __init__(self, text, shift):
         '''
@@ -218,7 +246,8 @@ if __name__ == '__main__':
 #    print('Actual Output:', ciphertext.decrypt_message())
 
     #TODO: WRITE YOUR TEST CASES HERE
-
+    m = Message("foo bar")
+    print(m.get_message_text())
+    print(m.build_shift_dict(2))
+    print(m.apply_shift(2))
     #TODO: best shift value and unencrypted story 
-    
-    pass #delete this line and replace with your code here
