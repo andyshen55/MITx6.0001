@@ -163,7 +163,10 @@ class PlaintextMessage(Message):
             self.message_text_encrypted (string, created using shift)
 
         '''
-        pass #delete this line and replace with your code here
+        Message.__init__(self, text)
+        self.shift = shift
+        self.encryption_dict = self.build_shift_dict(shift)
+        self.message_text_encrypted = self.apply_shift(shift)
 
     def get_shift(self):
         '''
@@ -171,7 +174,7 @@ class PlaintextMessage(Message):
         
         Returns: self.shift
         '''
-        pass #delete this line and replace with your code here
+        return self.shift
 
     def get_encryption_dict(self):
         '''
@@ -179,7 +182,7 @@ class PlaintextMessage(Message):
         
         Returns: a COPY of self.encryption_dict
         '''
-        pass #delete this line and replace with your code here
+        return self.encryption_dict.copy()
 
     def get_message_text_encrypted(self):
         '''
@@ -187,7 +190,7 @@ class PlaintextMessage(Message):
         
         Returns: self.message_text_encrypted
         '''
-        pass #delete this line and replace with your code here
+        return self.message_text_encrypted
 
     def change_shift(self, shift):
         '''
@@ -199,7 +202,9 @@ class PlaintextMessage(Message):
 
         Returns: nothing
         '''
-        pass #delete this line and replace with your code here
+        self.shift = shift
+        self.encryption_dict = self.build_shift_dict(shift)
+        self.message_text_encrypted = self.apply_shift(shift)
 
 
 class CiphertextMessage(Message):
@@ -246,8 +251,18 @@ if __name__ == '__main__':
 #    print('Actual Output:', ciphertext.decrypt_message())
 
     #TODO: WRITE YOUR TEST CASES HERE
-    m = Message("foo bar")
-    print(m.get_message_text())
-    print(m.build_shift_dict(2))
-    print(m.apply_shift(2))
+    # m = Message("foo bar")
+    # print(m.get_message_text())
+    # print(m.build_shift_dict(2))
+    # print(m.apply_shift(2))
+
+    n = PlaintextMessage("foo bar", 2)
+    print(n.get_message_text())
+    print(n.get_shift())
+    print(n.get_encryption_dict())
+    print(n.get_message_text_encrypted())
+    n.change_shift(1)
+    print(n.get_shift())
+    print(n.get_encryption_dict())
+    print(n.get_message_text_encrypted())
     #TODO: best shift value and unencrypted story 
