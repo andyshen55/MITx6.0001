@@ -8,8 +8,6 @@ import string
 #constants
 ASCII_LOWERCASE_START = 97
 ASCII_UPPERCASE_START = 65
-# ASCII_LOWERCASE_END = 122
-# ASCII_UPPERCASE_END = 90
 
 ### HELPER CODE ###
 def load_words(file_name):
@@ -64,6 +62,7 @@ def get_story_string():
 ### END HELPER CODE ###
 
 WORDLIST_FILENAME = 'words.txt'
+WORD_LIST = load_words(WORDLIST_FILENAME)
 
 class Message(object):
     def __init__(self, text):
@@ -77,7 +76,7 @@ class Message(object):
             self.valid_words (list, determined using helper function load_words)
         '''
         self.message_text = text
-        self.valid_words = load_words(WORDLIST_FILENAME)
+        self.valid_words = WORD_LIST
 
     def get_message_text(self):
         '''
@@ -144,6 +143,9 @@ class Message(object):
             #non alphabetical letters are ignored, pursuant to the spec
             if letter in cipher:
                 encrypted += cipher[letter]
+            else:
+                encrypted += letter
+
         return encrypted
         
     
@@ -218,7 +220,19 @@ class CiphertextMessage(Message):
             self.message_text (string, determined by input text)
             self.valid_words (list, determined using helper function load_words)
         '''
-        pass #delete this line and replace with your code here
+        Message.__init__(self, text)
+
+    def findWordHelper(self, shift):
+        '''
+        Returns the number of valid words after applying a shift to an encrypted message
+                
+        shift (int): the number to shift by 
+        '''
+        #applies shift onto message and separates into individual words
+        words = self.apply_shift(shift).split()
+        #appends shifted word to list of words if valid
+        valid = [word for word in words if is_word(self.valid_words, word)]
+        return len(valid)
 
     def decrypt_message(self):
         '''
@@ -236,33 +250,55 @@ class CiphertextMessage(Message):
         Returns: a tuple of the best shift value used to decrypt the message
         and the decrypted message text using that shift value
         '''
-        pass #delete this line and replace with your code here
+        #list storing number of valid words for every shift from 0-25
+        numWords = [self.findWordHelper(alpha) for alpha in range(26)]
+        #shift number is implicitly store in the index of each entry in numWords
+        bestShift = numWords.index(max(numWords))
+        return (bestShift, self.apply_shift(bestShift))
+            
 
 if __name__ == '__main__':
-
-#    #Example test case (PlaintextMessage)
-#    plaintext = PlaintextMessage('hello', 2)
-#    print('Expected Output: jgnnq')
-#    print('Actual Output:', plaintext.get_message_text_encrypted())
-#
-#    #Example test case (CiphertextMessage)
-#    ciphertext = CiphertextMessage('jgnnq')
-#    print('Expected Output:', (24, 'hello'))
-#    print('Actual Output:', ciphertext.decrypt_message())
-
     #TODO: WRITE YOUR TEST CASES HERE
     # m = Message("foo bar")
     # print(m.get_message_text())
     # print(m.build_shift_dict(2))
     # print(m.apply_shift(2))
 
-    n = PlaintextMessage("foo bar", 2)
-    print(n.get_message_text())
-    print(n.get_shift())
-    print(n.get_encryption_dict())
-    print(n.get_message_text_encrypted())
-    n.change_shift(1)
-    print(n.get_shift())
-    print(n.get_encryption_dict())
-    print(n.get_message_text_encrypted())
+    # n = PlaintextMessage("foo bar", 2)
+    # print(n.get_message_text())
+    # print(n.get_shift())
+    # print(n.get_encryption_dict())
+    # print(n.get_message_text_encrypted())
+    # n.change_shift(1)
+    # print(n.get_shift())
+    # print(n.get_encryption_dict())
+    # print(n.get_message_text_encrypted())
+
+    plaintext = PlaintextMessage('hello', 2)
+    print('Expected Output: jgnnq')
+    print('Actual Output:', plaintext.get_message_text_encrypted())
+
+    plaintext2 = PlaintextMessage('jasmine', 1)
+    print('Expected Output: kbtnjof')
+    print('Actual Output:', plaintext2.get_message_text_encrypted())
+
+    ciphertext = CiphertextMessage('jgnnq')
+    print('Expected Output:', (24, 'hello'))
+    print('Actual Output:', ciphertext.decrypt_message())
+
+    ciphertext2 = CiphertextMessage('kbtnjof')
+    print('Expected Output:', (25, 'jasmine'))
+    print('Actual Output:', ciphertext2.decrypt_message())
+
     #TODO: best shift value and unencrypted story 
+    story = CiphertextMessage(get_story_string())
+    print(story.decrypt_message())
+    
+    #best shift:
+    # 12
+    #story: 
+    # Jack Florey is a mythical character created on the spur of a moment to help cover an 
+    # insufficiently planned hack. He has been registered for classes at MIT twice before, 
+    # but has reportedly never passed aclass. It has been the tradition of the residents of 
+    # East Campus to become Jack Florey for a few nights each year to educate incoming students 
+    # in the ways, means, and ethics of hacking.
