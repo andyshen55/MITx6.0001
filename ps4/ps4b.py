@@ -231,7 +231,7 @@ class CiphertextMessage(Message):
         #applies shift onto message and separates into individual words
         words = self.apply_shift(shift).split()
         #appends shifted word to list of words if valid
-        valid = [word for word in words if is_word(self.valid_words, word)]
+        valid = [word for word in words if is_word(self.get_valid_words(), word)]
         return len(valid)
 
     def decrypt_message(self):

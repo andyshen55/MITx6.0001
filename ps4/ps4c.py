@@ -52,6 +52,7 @@ def is_word(word_list, word):
 ### END HELPER CODE ###
 
 WORDLIST_FILENAME = 'words.txt'
+WORD_LIST = load_words(WORDLIST_FILENAME)
 
 # you may find these constants helpful
 VOWELS_LOWER = 'aeiou'
@@ -71,7 +72,7 @@ class SubMessage(object):
             self.valid_words (list, determined using helper function load_words)
         '''
         self.message_text = text
-        self.valid_words = load_words(WORDLIST_FILENAME)
+        self.valid_words = WORD_LIST
     
     def get_message_text(self):
         '''
@@ -143,7 +144,7 @@ class EncryptedSubMessage(SubMessage):
             self.message_text (string, determined by input text)
             self.valid_words (list, determined using helper function load_words)
         '''
-        pass #delete this line and replace with your code here
+        SubMessage.__init__(self, text)
 
     def decrypt_message(self):
         '''
@@ -163,7 +164,22 @@ class EncryptedSubMessage(SubMessage):
         
         Hint: use your function from Part 4A
         '''
-        pass #delete this line and replace with your code here
+        #all 120 permutations of vowels
+        vowelSubs = get_permutations(VOWELS_LOWER)
+        numWords = []
+
+        #apply transposition of each permutation to message and add number of valid words
+        for perm in vowelSubs:
+            words = self.apply_transpose(self.build_transpose_dict(perm)).split()
+            valid = [word for word in words if is_word(self.get_valid_words(), word)]
+            numWords.append(len(valid))
+
+        #if no words were found, returns original encrypted message
+        maxWords = max(numWords)
+        if maxWords == 0:
+            return self.get_message_text()
+        #maxWords implicity maintains each permutations index within its own indices
+        return self.apply_transpose(self.build_transpose_dict(vowelSubs[numWords.index(maxWords)]))
     
 
 if __name__ == '__main__':
@@ -175,7 +191,15 @@ if __name__ == '__main__':
     print("Original message:", message.get_message_text(), "Permutation:", permutation)
     print("Expected encryption:", "Hallu Wurld!")
     print("Actual encryption:", message.apply_transpose(enc_dict))
-    # enc_message = EncryptedSubMessage(message.apply_transpose(enc_dict))
-    # print("Decrypted message:", enc_message.decrypt_message())
+    enc_message = EncryptedSubMessage(message.apply_transpose(enc_dict))
+    print("Decrypted message:", enc_message.decrypt_message())
      
     #TODO: WRITE YOUR TEST CASES HERE
+    message2 = SubMessage("pied piper poked a pack of pickled puppies.")
+    permutation2 = "uioae"
+    enc_dict2 = message2.build_transpose_dict(permutation2)
+    print("Original message:", message2.get_message_text(), "Permutation:", permutation2)
+    print("Expected encryption:", "poid popir pakid u puck af pocklid peppois.")
+    print("Actual encryption:", message2.apply_transpose(enc_dict2))
+    enc_message2 = EncryptedSubMessage(message2.apply_transpose(enc_dict2))
+    print("Decrypted message:", enc_message2.decrypt_message())
