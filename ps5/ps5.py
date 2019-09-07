@@ -60,7 +60,7 @@ class NewsStory():
         self.title = title
         self.description = description
         self.link = link
-        self.pubdate = pubdate
+        self.pubdate = pubdate.replace(tzinfo=pytz.timezone('EST'))
 
     def get_guid(self):
         return self.guid
@@ -130,15 +130,33 @@ class DescriptionTrigger(PhraseTrigger):
 # TIME TRIGGERS
 
 # Problem 5
-# TODO: TimeTrigger
+class TimeTrigger(Trigger):
+    def __init__(self, time):
+        try:
+            self.time = datetime.strptime(time, "%d %b %Y %H:%M:%S").replace(tzinfo=pytz.timezone("EST"))
+        except ValueError as e:
+            raise(e)
+    
+    def get_time(self):
+        return self.time
 # Constructor:
 #        Input: Time has to be in EST and in the format of "%d %b %Y %H:%M:%S".
 #        Convert time from string to a datetime before saving it as an attribute.
 
 # Problem 6
-# TODO: BeforeTrigger and AfterTrigger
+class BeforeTrigger(TimeTrigger):
+    def __init__(self, time):
+        TimeTrigger.__init__(self, time)
 
+    def evaluate(self, story):
+        return story.get_pubdate() < self.get_time()
 
+class AfterTrigger(TimeTrigger):
+    def __init__(self, time):
+        TimeTrigger.__init__(self, time)
+
+    def evaluate(self, story):
+        return story.get_pubdate() > self.get_time()
 # COMPOSITE TRIGGERS
 
 # Problem 7
