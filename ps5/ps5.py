@@ -54,7 +54,6 @@ def process(url):
 
 # Problem 1
 
-# TODO: NewsStory
 class NewsStory():
     def __init__(self, guid, title, description, link, pubdate):
         self.guid = guid
@@ -95,13 +94,38 @@ class Trigger(object):
 # PHRASE TRIGGERS
 
 # Problem 2
-# TODO: PhraseTrigger
+
+class PhraseTrigger(Trigger):
+    def __init__(self, phrase):
+        self.phrase = phrase.lower()
+    
+    def get_phrase(self):
+        return self.phrase
+
+    def is_phrase_in(self, text):
+        for punc in string.punctuation:
+            text = text.replace(punc, ' ')
+
+        #strips extra space characters 
+        normalSpacedText = ' '.join(text.lower().split())
+        #extra space added to deal with edge cases such as 'cow' in 'cows' erroneously returning True
+        return (self.get_phrase() + " ") in (normalSpacedText + " ")
 
 # Problem 3
-# TODO: TitleTrigger
+class TitleTrigger(PhraseTrigger):
+    def __init__(self, title):
+        PhraseTrigger.__init__(self, title)
+
+    def evaluate(self, story):
+        return self.is_phrase_in(story.get_title())
 
 # Problem 4
-# TODO: DescriptionTrigger
+class DescriptionTrigger(PhraseTrigger):
+    def __init__(self, title):
+        PhraseTrigger.__init__(self, title)
+
+    def evaluate(self, story):
+        return self.is_phrase_in(story.get_description())
 
 # TIME TRIGGERS
 
