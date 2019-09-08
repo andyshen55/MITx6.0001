@@ -121,8 +121,8 @@ class TitleTrigger(PhraseTrigger):
 
 # Problem 4
 class DescriptionTrigger(PhraseTrigger):
-    def __init__(self, title):
-        PhraseTrigger.__init__(self, title)
+    def __init__(self, description):
+        PhraseTrigger.__init__(self, description)
 
     def evaluate(self, story):
         return self.is_phrase_in(story.get_description())
@@ -226,13 +226,43 @@ def read_trigger_config(filename):
         if not (len(line) == 0 or line.startswith('//')):
             lines.append(line)
 
-    # TODO: Problem 11
-    # line is the list of lines that you need to parse and for which you need
-    # to build triggers
+    triggers = {}
+    triggerlist = []
+    for line in lines:
+        attr = line.split(',')
+        try:
+            name = attr[0]
+            type = attr[1]
+            if name == 'ADD':
+                triggerlist += [triggers[trigger] for trigger in attr[1:]]
+            elif type == 'NOT':
+                triggers[name] = NotTrigger(triggers[attr[2]])
+            elif type == 'AND':
+                triggers[name] = AndTrigger(triggers[attr[2]], triggers[attr[3]])
+            elif type == 'OR':
+                triggers[name] = OrTrigger(triggers[attr[2]], triggers[attr[3]])
+            else:
+                triggers[name] = createTrigger(attr)
+        
+        except IndexError as e:
+            raise(e)
 
-    print(lines) # for now, print it so you see what it contains!
+    return triggerlist
 
+def createTrigger(attributes):
+    try:
+        type = attributes[1]
+        if type == 'TITLE':
+            return TitleTrigger(attributes[2])
+        elif type == 'DESCRIPTION':
+            return DescriptionTrigger(attributes[2])
+        elif type == 'AFTER':
+            return AfterTrigger(attributes[2])
+        elif type == 'BEFORE':
+            return AfterTrigger(attributes[2])
 
+    except IndexError as e:
+        raise(e)
 
 SLEEPTIME = 120 #seconds -- how often we poll
 
@@ -248,7 +278,7 @@ def main_thread(master):
 
         # Problem 11
         # TODO: After implementing read_trigger_config, uncomment this line 
-        # triggerlist = read_trigger_config('triggers.txt')
+        triggerlist = read_trigger_config('triggers.txt')
         
         # HELPER CODE - you don't need to understand this!
         # Draws the popup window that displays the filtered stories
