@@ -133,6 +133,7 @@ class DescriptionTrigger(PhraseTrigger):
 class TimeTrigger(Trigger):
     def __init__(self, time):
         try:
+            #datetime formatting according to format string, with EST standardized timezone
             self.time = datetime.strptime(time, "%d %b %Y %H:%M:%S").replace(tzinfo=pytz.timezone("EST"))
         except ValueError as e:
             raise(e)
@@ -157,6 +158,7 @@ class AfterTrigger(TimeTrigger):
 
     def evaluate(self, story):
         return story.get_pubdate() > self.get_time()
+
 # COMPOSITE TRIGGERS
 
 # Problem 7
@@ -200,6 +202,7 @@ def filter_stories(stories, triggerlist):
     filtered = []
     for story in stories:
         for trigger in triggerlist:
+            #i only want each story to be appended once, in case multiple triggers are fired for the same story
             if trigger.evaluate(story):
                 filtered.append(story)
                 break
@@ -226,11 +229,13 @@ def read_trigger_config(filename):
         if not (len(line) == 0 or line.startswith('//')):
             lines.append(line)
 
+    #use a dict of triggers to keep track of trigger names
     triggers = {}
     triggerlist = []
     for line in lines:
         attr = line.split(',')
         try:
+            #add, and, or, not commands all act on pre-existing triggers
             name = attr[0]
             type = attr[1]
             if name == 'ADD':
@@ -241,6 +246,8 @@ def read_trigger_config(filename):
                 triggers[name] = AndTrigger(triggers[attr[2]], triggers[attr[3]])
             elif type == 'OR':
                 triggers[name] = OrTrigger(triggers[attr[2]], triggers[attr[3]])
+            
+            #any other command requires a new trigger to be created
             else:
                 triggers[name] = createTrigger(attr)
         
@@ -250,6 +257,13 @@ def read_trigger_config(filename):
     return triggerlist
 
 def createTrigger(attributes):
+    '''
+    Helper function that creates a trigger.
+    
+    attributes: list of attributes to be assigned to the trigger
+
+    Returns a subclass of a Trigger object depending on the second attribute
+    '''
     try:
         type = attributes[1]
         if type == 'TITLE':
